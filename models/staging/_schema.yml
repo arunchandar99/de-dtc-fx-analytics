@@ -1,0 +1,5 @@
+version: 2 
+
+sources : 
+  - name : raw 
+    description: Raw source data for DTC FX Analytics
