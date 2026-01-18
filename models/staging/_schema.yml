@@ -1,5 +1,24 @@
-version: 2 
+version: 2
 
-sources : 
-  - name : raw 
-    description: Raw source data for DTC FX Analytics
+sources:
+  - name: raw
+    description: Raw source data from DTC FX source systems
+    database: dtc_fx
+    schema: raw
+    tables:
+      - name: raw_branches
+        description: Branch data from Branch Management System
+      - name: raw_currencies
+        description: Currency reference data
+      - name: raw_employees
+        description: Employee data from ADP Workforce Now
+      - name: raw_customers
+        description: Customer data extracted from POS transactions
+      - name: raw_exchange_rates
+        description: Daily exchange rates from Reuters Market Feed
+      - name: raw_transactions
+        description: Transaction data from POS System
+      - name: raw_shifts
+        description: Employee shift data from ADP Workforce Now
+      - name: raw_daily_cash_inventory
+        description: Daily cash inventory counts from Branch Management System
