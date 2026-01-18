@@ -1,0 +1,30 @@
+name: 'dtc_fx_analytics'
+version: '1.0.0'
+
+profile: 'default'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  dtc_fx_analytics:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      dimensions:
+        +schema: marts
+        +materialized: table
+      facts:
+        +schema: marts
+        +materialized: table
