@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: fct_branch_performance
+    columns:
+      - name: day_type
+        data_tests:
+          - accepted_values:
+              values: ['busy day', 'normal day', 'slow day']
