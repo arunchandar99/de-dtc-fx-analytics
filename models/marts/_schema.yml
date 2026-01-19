@@ -1,0 +1,140 @@
+version: 2
+
+models:
+  # Dimensions
+  - name: dim_branches
+    description: Branch dimension containing all DTC retail locations
+    columns:
+      - name: branch_key
+        description: Surrogate key for branch
+        tests:
+          - unique
+          - not_null
+      - name: branch_id
+        description: Natural key from source system
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_currencies
+    description: Currency dimension containing all supported currencies
+    columns:
+      - name: currency_key
+        description: Surrogate key for currency
+        tests:
+          - unique
+          - not_null
+      - name: currency_id
+        description: Natural key from source system
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_customers
+    description: Customer dimension containing all customers who have exchanged currency
+    columns:
+      - name: customer_key
+        description: Surrogate key for customer
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Natural key from source system
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_employees
+    description: Employee dimension containing all branch staff (tellers and managers)
+    columns:
+      - name: employee_key
+        description: Surrogate key for employee
+        tests:
+          - unique
+          - not_null
+      - name: employee_id
+        description: Natural key from source system
+        tests:
+          - unique
+          - not_null
+
+  # Facts
+  - name: fct_exchange_rates
+    description: Daily exchange rates for all currency pairs
+    columns:
+      - name: rate_id
+        description: Primary key for exchange rate record
+        tests:
+          - unique
+          - not_null
+      - name: source_currency_key
+        description: Foreign key to dim_currencies (currency being sold)
+        tests:
+          - not_null
+      - name: target_currency_key
+        description: Foreign key to dim_currencies (currency being bought)
+        tests:
+          - not_null
+
+  - name: fct_daily_cash_inventory
+    description: Daily cash inventory counts by branch and currency
+    columns:
+      - name: inventory_id
+        description: Primary key for inventory record
+        tests:
+          - unique
+          - not_null
+      - name: branch_key
+        description: Foreign key to dim_branches
+        tests:
+          - not_null
+      - name: currency_key
+        description: Foreign key to dim_currencies
+        tests:
+          - not_null
+
+  - name: fct_shifts
+    description: Employee shift schedules and actual hours worked
+    columns:
+      - name: shift_id
+        description: Primary key for shift record
+        tests:
+          - unique
+          - not_null
+      - name: employee_key
+        description: Foreign key to dim_employees
+        tests:
+          - not_null
+      - name: branch_key
+        description: Foreign key to dim_branches
+        tests:
+          - not_null
+
+  - name: fct_transactions
+    description: Currency exchange transactions - the core fact table
+    columns:
+      - name: transaction_line_id
+        description: Primary key for transaction line
+        tests:
+          - unique
+          - not_null
+      - name: customer_key
+        description: Foreign key to dim_customers
+        tests:
+          - not_null
+      - name: employee_key
+        description: Foreign key to dim_employees
+        tests:
+          - not_null
+      - name: branch_key
+        description: Foreign key to dim_branches
+        tests:
+          - not_null
+      - name: source_currency_key
+        description: Foreign key to dim_currencies (currency customer sold)
+        tests:
+          - not_null
+      - name: target_currency_key
+        description: Foreign key to dim_currencies (currency customer bought)
+        tests:
+          - not_null

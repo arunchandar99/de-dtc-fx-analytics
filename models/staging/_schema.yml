@@ -1,5 +1,200 @@
-version: 2 
+version: 2
 
-sources : 
-  - name : raw 
-    description: Raw source data for DTC FX Analytics
+sources:
+  - name: raw
+    description: Raw source data from DTC FX source systems
+    database: dtc_fx
+    schema: raw
+    tables:
+      - name: raw_branches
+        description: Branch data from Branch Management System
+      - name: raw_currencies
+        description: Currency reference data
+      - name: raw_employees
+        description: Employee data from ADP Workforce Now
+      - name: raw_customers
+        description: Customer data extracted from POS transactions
+      - name: raw_exchange_rates
+        description: Daily exchange rates from Reuters Market Feed
+      - name: raw_transactions
+        description: Transaction data from POS System
+      - name: raw_shifts
+        description: Employee shift data from ADP Workforce Now
+      - name: raw_daily_cash_inventory
+        description: Daily cash inventory counts from Branch Management System
+
+
+models:
+  - name: stg_branches
+    description: staged branch data
+    columns:
+      - name: branch_id
+        description: primary key 
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_currencies
+    description: staged currency data 
+    columns:
+      - name: currency_id 
+        description: primary key 
+        tests:
+          - unique
+          - not_null
+
+      - name: currency_code 
+        description: currency code (USD, EUR etc.,)
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_customers
+    description: staged customer data
+    columns:
+      - name: customer_id
+        description: primary key 
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_employees
+    description: staged employee data 
+    columns:
+      - name: employee_id 
+        description: primary key 
+        tests:
+          - unique
+          - not_null
+      
+      - name: branch_id 
+        description: foreign key to branches 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_branches')
+              field: branch_id 
+
+  - name: stg_exchange_rates 
+    description: staged exchange rate data 
+    columns:
+      - name: rate_id
+        description: primary key 
+        tests:
+          - unique
+          - not_null
+      - name: source_currency_code 
+        description: foreign key to currencies 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_currencies')
+              field: currency_code
+              
+      - name: target_currency_code 
+        description: foreign key to currencies 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_currencies')
+              field: currency_code
+              
+  - name: stg_shifts
+    description: staged shift data 
+    columns:
+      - name: shift_id 
+        description: primary key 
+        tests:
+          - unique
+          - not_null
+      - name: employee_id 
+        description: foreign key to employees 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_employees')
+              field: employee_id
+      - name: branch_id 
+        description: foreign key to branches 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_branches')
+              field: branch_id
+
+  - name: stg_daily_cash_inventory 
+    description: staged daily cash inventory 
+    columns:
+      - name: inventory_id 
+        description: primary key 
+        tests:
+          - not_null
+          - unique
+      - name: branch_id 
+        description: foreign key to branches 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_branches')
+              field: branch_id
+      - name: currency_code 
+        description: foreign key to currencies 
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_currencies')
+              field: currency_code
+
+  - name: stg_transactions
+    description: Staged transaction data
+    columns:
+      - name: transaction_line_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: transaction_id
+        description: Transaction identifier
+        tests:
+          - not_null
+      - name: customer_id
+        description: Foreign key to customers
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: employee_id
+        description: Foreign key to employees
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_employees')
+              field: employee_id
+      - name: branch_id
+        description: Foreign key to branches
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_branches')
+              field: branch_id
+      - name: source_currency_code
+        description: Foreign key to currencies
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_currencies')
+              field: currency_code
+      - name: target_currency_code
+        description: Foreign key to currencies
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_currencies')
+              field: currency_code
+      - name: market_rate
+        tests:
+          - not_null
+      - name: exchange_rate_applied
+        tests:
+          - not_null
